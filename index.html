@@ -13,9 +13,8 @@
         /* Basic Setup */
         :root {
             --bg-color: #FEF7F7; /* Pastel Pink */
-            --card-color: rgba(255, 255, 255, 0.97); /* Slightly transparent */
+            --card-color: rgba(255, 255, 255, 0.97); 
             --text-color: #333;
-            --phonetic-color: #555;
             --button-primary: #AED9E0; /* Pastel Blue */
             --button-secondary: #F5C396; /* Pastel Orange */
             --button-text: #333;
@@ -23,15 +22,11 @@
         }
         
         body {
-            /* Using Patrick Hand font for the "doodle" feel */
             font-family: 'Patrick Hand', cursive;
             background-color: var(--bg-color);
-            
-            /* Use the uploaded pattern as the background */
             background-image: url('pattern.jpg');
-            background-size: 400px; /* Control the repeat size */
+            background-size: 400px;
             background-position: center;
-            
             color: var(--text-color);
             display: flex;
             justify-content: center;
@@ -50,7 +45,7 @@
             max-height: 600px;
             background-color: var(--card-color);
             border-radius: 24px;
-            border: 2px solid #EEE; /* Softer border */
+            border: 2px solid #EEE;
             box-shadow: var(--shadow);
             padding: 20px;
             box-sizing: border-box;
@@ -61,8 +56,8 @@
 
         /* Header */
         header h1 {
-            font-size: 2rem; /* Adjusted for new font */
-            font-weight: 400; /* Font is naturally bold */
+            font-size: 2rem;
+            font-weight: 400;
             color: var(--text-color);
             margin: 0 0 10px 0;
         }
@@ -79,7 +74,6 @@
         }
 
         #word-display {
-            /* Using sans-serif for the main word for max readability */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 6rem; 
             font-weight: 700;
@@ -88,29 +82,25 @@
             margin: 0;
         }
 
-        #phonetic-display {
-            font-size: 2rem; /* Adjusted for new font */
+        /* Audio Button Style */
+        #audio-button {
+            font-family: 'Patrick Hand', cursive; 
+            font-size: 1.5rem; 
             font-weight: 400;
-            color: var(--phonetic-color);
-            margin-top: 15px;
-            display: flex; /* To align icon and text */
-            align-items: center;
-            justify-content: center;
-            gap: 10px; /* Space between icon and text */
+            color: var(--button-text);
+            background-color: var(--button-primary); 
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px; 
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            margin-top: 25px; 
         }
 
-        /* Audio Button */
-        #audio-button {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 2.5rem; 
-            color: var(--button-primary);
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 0;
+        #audio-button:active {
+            transform: scale(0.97); 
         }
+
 
         /* Navigation Buttons */
         nav {
@@ -121,8 +111,8 @@
         }
 
         nav button {
-            font-family: 'Patrick Hand', cursive; /* Use doodle font */
-            font-size: 1.5rem; /* Adjusted for new font */
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.5rem;
             font-weight: 400;
             color: var(--button-text);
             border: none;
@@ -160,9 +150,12 @@
         </header>
 
         <main id="word-card">
-            <button id="audio-button" title="Listen">&#128266;</button> <h2 id="word-display">...</h2>
+            <h2 id="word-display">...</h2>
             
-            <p id="phonetic-display">🗣️ <span id="phonetic-text">...</span></p>
+            <button id="audio-button" title="Listen">
+                &#128266; Listen
+            </button>
+            
         </main>
 
         <nav>
@@ -172,7 +165,7 @@
     </div>
 
     <script>
-        // --- 1. Data: Words (with updated UK phonetic hints) ---
+        // --- 1. Data: Words (phonetic info is still here, but unused) ---
         const wordList = [
             { word: "above", phonetic: "a-BUV" },
             { word: "all", phonetic: "awl" },
@@ -216,7 +209,9 @@
             { word: "saw", phonetic: "saw" },
             { word: "school", phonetic: "skool" },
             { word: "she", phonetic: "shee" },
+            
             { word: "should", phonetic: "shood" },
+            
             { word: "small", phonetic: "smawl" },
             { word: "So", phonetic: "so" },
             { word: "some", phonetic: "sum" },
@@ -251,12 +246,11 @@
 
         // --- 2. App State & DOM Elements ---
         const wordDisplay = document.getElementById('word-display');
-        const phoneticText = document.getElementById('phonetic-text'); // Updated
         const backButton = document.getElementById('back-button');
         const nextButton = document.getElementById('next-button');
         const audioButton = document.getElementById('audio-button');
 
-        let historyStack = []; // Stores the *indices* of words shown
+        let historyStack = []; 
         let currentIndex = -1;
         let currentWord = ''; 
 
@@ -283,7 +277,6 @@
             synth.cancel(); 
             const utterance = new SpeechSynthesisUtterance(currentWord);
             
-            // **UPDATED: Prioritize British English (en-GB) voices**
             let selectedVoice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
                                 voices.find(v => v.lang === 'en-GB') ||
                                 voices.find(v => v.name.includes('UK English')) ||
@@ -293,7 +286,7 @@
 
             utterance.voice = selectedVoice;
             utterance.pitch = 1.1; 
-            utterance.rate = 0.85; // Slightly slower for clarity
+            utterance.rate = 0.85; 
             
             synth.speak(utterance);
         }
@@ -303,8 +296,7 @@
             const wordData = wordList[index];
             currentWord = wordData.word; 
             wordDisplay.textContent = wordData.word;
-            phoneticText.textContent = wordData.phonetic; // Update the span
-
+            
             // Adjust font size for longer words
             if (wordData.word.length > 6) {
                 wordDisplay.style.fontSize = "4.5rem";
