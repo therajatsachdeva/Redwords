@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Practice Your Red Words</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
+    <style>
+        /* Basic Setup */
+        :root {
+            --bg-color: #FEF7F7; /* Pastel Pink */
+            --card-color: rgba(255, 255, 255, 0.97); /* Slightly transparent */
+            --text-color: #333;
+            --phonetic-color: #555;
+            --button-primary: #AED9E0; /* Pastel Blue */
+            --button-secondary: #F5C396; /* Pastel Orange */
+            --button-text: #333;
+            --shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+        }
+        
+        body {
+            /* Using Patrick Hand font for the "doodle" feel */
+            font-family: 'Patrick Hand', cursive;
+            background-color: var(--bg-color);
+            
+            /* Use the uploaded pattern as the background */
+            background-image: url('pattern.jpg');
+            background-size: 400px; /* Control the repeat size */
+            background-position: center;
+            
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            text-align: center;
+        }
+
+        /* Main App Container */
+        #app-container {
+            width: 90%;
+            max-width: 400px;
+            height: 80vh;
+            max-height: 600px;
+            background-color: var(--card-color);
+            border-radius: 24px;
+            border: 2px solid #EEE; /* Softer border */
+            box-shadow: var(--shadow);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Header */
+        header h1 {
+            font-size: 2rem; /* Adjusted for new font */
+            font-weight: 400; /* Font is naturally bold */
+            color: var(--text-color);
+            margin: 0 0 10px 0;
+        }
+
+        /* Word Display Area */
+        #word-card {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #word-display {
+            /* Using sans-serif for the main word for max readability */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 6rem; 
+            font-weight: 700;
+            color: var(--text-color);
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        #phonetic-display {
+            font-size: 2rem; /* Adjusted for new font */
+            font-weight: 400;
+            color: var(--phonetic-color);
+            margin-top: 15px;
+            display: flex; /* To align icon and text */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+        }
+
+        /* Audio Button */
+        #audio-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 2.5rem; 
+            color: var(--button-primary);
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 0;
+        }
+
+        /* Navigation Buttons */
+        nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        nav button {
+            font-family: 'Patrick Hand', cursive; /* Use doodle font */
+            font-size: 1.5rem; /* Adjusted for new font */
+            font-weight: 400;
+            color: var(--button-text);
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        nav button:active {
+            transform: scale(0.97);
+        }
+
+        #back-button {
+            background-color: var(--button-secondary);
+        }
+
+        #next-button {
+            background-color: var(--button-primary);
+        }
+
+        nav button:disabled {
+            background-color: #EAEAEA;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <header>
+            <h1>Practice Your Red Words</h1>
+        </header>
+
+        <main id="word-card">
+            <button id="audio-button" title="Listen">&#128266;</button> <h2 id="word-display">...</h2>
+            
+            <p id="phonetic-display">🗣️ <span id="phonetic-text">...</span></p>
+        </main>
+
+        <nav>
+            <button id="back-button">Back</button>
+            <button id="next-button">Next</button>
+        </nav>
+    </div>
+
+    <script>
+        // --- 1. Data: Words (with updated UK phonetic hints) ---
+        const wordList = [
+            { word: "above", phonetic: "a-BUV" },
+            { word: "all", phonetic: "awl" },
+            { word: "any", phonetic: "EN-ee" },
+            { word: "anyone", phonetic: "EN-ee-wun" },
+            { word: "are", phonetic: "ar" },
+            { word: "be", phonetic: "bee" },
+            { word: "bought", phonetic: "bawt" },
+            { word: "brother", phonetic: "BRUTH-uh" },
+            { word: "buy", phonetic: "by" },
+            { word: "by", phonetic: "by" },
+            { word: "call", phonetic: "kawl" },
+            { word: "caught", phonetic: "kawt" },
+            { word: "come", phonetic: "kum" },
+            { word: "could", phonetic: "kood" },
+            { word: "do", phonetic: "doo" },
+            { word: "does", phonetic: "duz" },
+            { word: "down", phonetic: "down" },
+            { word: "father", phonetic: "FAH-thuh" },
+            { word: "go", phonetic: "go" },
+            { word: "great", phonetic: "grayt" },
+            { word: "he", phonetic: "hee" },
+            { word: "her", phonetic: "huh" },
+            { word: "here", phonetic: "hee-uh" },
+            { word: "how", phonetic: "how" },
+            { word: "I", phonetic: "eye" },
+            { word: "love", phonetic: "luv" },
+            { word: "many", phonetic: "MEN-ee" },
+            { word: "me", phonetic: "mee" },
+            { word: "mother", phonetic: "MUTH-uh" },
+            { word: "my", phonetic: "my" },
+            { word: "no", phonetic: "no" },
+            { word: "now", phonetic: "now" },
+            { word: "of", phonetic: "uv" },
+            { word: "old", phonetic: "old" },
+            { word: "once", phonetic: "wuns" },
+            { word: "one", phonetic: "wun" },
+            { word: "other", phonetic: "UTH-uh" },
+            { word: "over", phonetic: "OH-vuh" },
+            { word: "said", phonetic: "sed" },
+            { word: "saw", phonetic: "saw" },
+            { word: "school", phonetic: "skool" },
+            { word: "she", phonetic: "shee" },
+            { word: "should", phonetic: "shood" },
+            { word: "small", phonetic: "smawl" },
+            { word: "So", phonetic: "so" },
+            { word: "some", phonetic: "sum" },
+            { word: "son", phonetic: "sun" },
+            { word: "talk", phonetic: "tawk" },
+            { word: "tall", phonetic: "tawl" },
+            { word: "thought", phonetic: "thawt" },
+            { word: "the", phonetic: "thuh" },
+            { word: "through", phonetic: "throo" },
+            { word: "there", phonetic: "thair" },
+            { word: "to", phonetic: "too" },
+            { word: "they", phonetic: "thay" },
+            { word: "two", phonetic: "too" },
+            { word: "walk", phonetic: "wawk" },
+            { word: "want", phonetic: "wont" },
+            { word: "was", phonetic: "wuz" },
+            { word: "watch", phonetic: "woch" },
+            { word: "water", phonetic: "WAW-tuh" },
+            { word: "what", phonetic: "wot" },
+            { word: "we", phonetic: "wee" },
+            { word: "where", phonetic: "wair" },
+            { word: "wear", phonetic: "wair" },
+            { word: "who", phonetic: "hoo" },
+            { word: "were", phonetic: "wuh" },
+            { word: "whole", phonetic: "hohl" },
+            { word: "why", phonetic: "wy" },
+            { word: "worse", phonetic: "wuhs" },
+            { word: "would", phonetic: "wood" },
+            { word: "you", phonetic: "yoo" },
+            { word: "your", phonetic: "yor" }
+        ];
+
+        // --- 2. App State & DOM Elements ---
+        const wordDisplay = document.getElementById('word-display');
+        const phoneticText = document.getElementById('phonetic-text'); // Updated
+        const backButton = document.getElementById('back-button');
+        const nextButton = document.getElementById('next-button');
+        const audioButton = document.getElementById('audio-button');
+
+        let historyStack = []; // Stores the *indices* of words shown
+        let currentIndex = -1;
+        let currentWord = ''; 
+
+        // --- 3. Speech Synthesis ---
+        const synth = window.speechSynthesis;
+        let voices = [];
+
+        function populateVoices() {
+            if(typeof synth === 'undefined') return;
+            voices = synth.getVoices().filter(voice => voice.lang.startsWith('en'));
+        }
+        
+        populateVoices();
+        if (typeof synth !== 'undefined' && synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoices;
+        }
+
+        function speakWord() {
+            if (!currentWord || !synth) {
+                console.log('Speech synthesis not available or no word selected.');
+                return;
+            }
+            
+            synth.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(currentWord);
+            
+            // **UPDATED: Prioritize British English (en-GB) voices**
+            let selectedVoice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
+                                voices.find(v => v.lang === 'en-GB') ||
+                                voices.find(v => v.name.includes('UK English')) ||
+                                voices.find(v => v.lang.startsWith('en-GB')) ||
+                                voices.find(v => v.lang.startsWith('en')) || 
+                                voices[0]; 
+
+            utterance.voice = selectedVoice;
+            utterance.pitch = 1.1; 
+            utterance.rate = 0.85; // Slightly slower for clarity
+            
+            synth.speak(utterance);
+        }
+
+        // --- 4. Core App Logic ---
+        function displayWord(index) {
+            const wordData = wordList[index];
+            currentWord = wordData.word; 
+            wordDisplay.textContent = wordData.word;
+            phoneticText.textContent = wordData.phonetic; // Update the span
+
+            // Adjust font size for longer words
+            if (wordData.word.length > 6) {
+                wordDisplay.style.fontSize = "4.5rem";
+            } else {
+                wordDisplay.style.fontSize = "6rem";
+            }
+        }
+
+        function updateNavButtons() {
+            backButton.disabled = (currentIndex <= 0);
+        }
+
+        function showNextWord() {
+            if (currentIndex < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, currentIndex + 1);
+            }
+            const newIndex = Math.floor(Math.random() * wordList.length);
+            historyStack.push(newIndex);
+            currentIndex++;
+            displayWord(newIndex);
+            updateNavButtons();
+        }
+
+        function showPreviousWord() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayWord(historyStack[currentIndex]);
+                updateNavButtons();
+            }
+        }
+
+        // --- 5. Event Listeners ---
+        nextButton.addEventListener('click', showNextWord);
+        backButton.addEventListener('click', showPreviousWord);
+        audioButton.addEventListener('click', speakWord);
+        wordDisplay.addEventListener('click', speakWord); 
+
+        // --- 6. Initial Load ---
+        function init() {
+            showNextWord(); 
+        }
+
+        init();
+    </script>
+</body>
+</html>
