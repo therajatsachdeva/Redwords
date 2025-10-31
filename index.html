@@ -55,8 +55,19 @@
         }
 
         /* Header */
+        header {
+            line-height: 1.2;
+        }
         header h1 {
             font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        /* Progress Counter Style */
+        #progress-counter {
+            font-size: 1.25rem;
             font-weight: 400;
             color: var(--text-color);
             margin: 0 0 10px 0;
@@ -96,11 +107,7 @@
             transition: transform 0.1s ease;
             margin-top: 25px; 
         }
-
-        #audio-button:active {
-            transform: scale(0.97); 
-        }
-
+        #audio-button:active { transform: scale(0.97); }
 
         /* Navigation Buttons */
         nav {
@@ -109,7 +116,6 @@
             gap: 15px;
             margin-top: 20px;
         }
-
         nav button {
             font-family: 'Patrick Hand', cursive;
             font-size: 1.5rem;
@@ -121,25 +127,138 @@
             cursor: pointer;
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
-
-        nav button:active {
-            transform: scale(0.97);
-        }
-
-        #back-button {
-            background-color: var(--button-secondary);
-        }
-
-        #next-button {
-            background-color: var(--button-primary);
-        }
-
+        nav button:active { transform: scale(0.97); }
+        #back-button { background-color: var(--button-secondary); }
+        #next-button { background-color: var(--button-primary); }
         nav button:disabled {
             background-color: #EAEAEA;
             color: #999;
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Milestone & All Done Overlay - Shared Styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-content {
+            font-family: 'Patrick Hand', cursive;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 350px; /* Slightly wider for all done */
+            box-shadow: var(--shadow);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .overlay.show .overlay-content {
+            transform: scale(1);
+        }
+
+        .overlay-content h2 {
+            font-size: 2.5rem;
+            color: var(--button-primary);
+            margin: 0 0 10px 0;
+        }
+        .overlay-image {
+            width: 100%;
+            max-width: 250px;
+            height: auto; /* Allow height to adjust naturally */
+            object-fit: contain; /* Ensure image fits without cropping */
+            border-radius: 10px;
+            margin: 10px auto; /* Center image */
+            background-color: #eee; /* Placeholder bg */
+        }
+        .overlay-status {
+            font-size: 1.25rem;
+            color: var(--text-color);
+            margin: 15px 0;
+        }
+        .overlay-button {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--button-text);
+            background-color: var(--button-secondary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .overlay-button:active { transform: scale(0.97); }
+
+        /* Winning Sticker Choice Styles */
+        #winning-sticker-choices {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .sticker-choice {
+            background: #f9f9f9;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            flex: 1; /* Distribute space evenly */
+        }
+        .sticker-choice:hover {
+            transform: translateY(-5px);
+            border-color: var(--button-primary);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        .sticker-choice.selected {
+            border-color: var(--button-primary);
+            box-shadow: 0 0 0 3px var(--button-primary); /* Highlight selected */
+        }
+        .sticker-choice img {
+            width: 80px; /* Smaller image size for choice */
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        #final-chosen-sticker {
+            margin-top: 20px;
+            border: 2px dashed #ccc; /* Border for chosen sticker area */
+            padding: 10px;
+            min-height: 100px; /* Ensure space even if no sticker chosen yet */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #final-chosen-sticker img {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: contain;
+            margin-top: 10px;
+        }
+        #final-chosen-sticker p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
     </style>
 </head>
 <body>
@@ -147,15 +266,14 @@
     <div id="app-container">
         <header>
             <h1>Practice Your Red Words</h1>
+            <p id="progress-counter">0 / 73</p>
         </header>
 
         <main id="word-card">
             <h2 id="word-display">...</h2>
-            
             <button id="audio-button" title="Listen">
                 &#128266; Listen
             </button>
-            
         </main>
 
         <nav>
@@ -164,95 +282,100 @@
         </nav>
     </div>
 
+    <div id="milestone-overlay" class="overlay">
+        <div id="milestone-content" class="overlay-content">
+            <h2>GREAT JOB!</h2>
+            <img id="milestone-image" class="overlay-image" src="" alt="Celebration">
+            <p id="milestone-status" class="overlay-status">X WORDS DONE. Y TO GO!</p>
+            <button id="milestone-continue-btn" class="overlay-button">Continue</button>
+        </div>
+    </div>
+
+    <div id="all-done-overlay" class="overlay">
+        <div id="all-done-content" class="overlay-content">
+            <h2>AMAZING, ALL DONE!</h2>
+            <p class="overlay-status">Choose your winning sticker!</p>
+            <div id="winning-sticker-choices">
+                </div>
+            <div id="final-chosen-sticker">
+                <p>Your chosen sticker will appear here!</p>
+            </div>
+            <button id="all-done-continue-btn" class="overlay-button" style="margin-top: 20px;">Finish</button>
+        </div>
+    </div>
+
     <script>
-        // --- 1. Data: Words (phonetic info is still here, but unused) ---
-        const wordList = [
-            { word: "above", phonetic: "a-BUV" },
-            { word: "all", phonetic: "awl" },
-            { word: "any", phonetic: "EN-ee" },
-            { word: "anyone", phonetic: "EN-ee-wun" },
-            { word: "are", phonetic: "ar" },
-            { word: "be", phonetic: "bee" },
-            { word: "bought", phonetic: "bawt" },
-            { word: "brother", phonetic: "BRUTH-uh" },
-            { word: "buy", phonetic: "by" },
-            { word: "by", phonetic: "by" },
-            { word: "call", phonetic: "kawl" },
-            { word: "caught", phonetic: "kawt" },
-            { word: "come", phonetic: "kum" },
-            { word: "could", phonetic: "kood" },
-            { word: "do", phonetic: "doo" },
-            { word: "does", phonetic: "duz" },
-            { word: "down", phonetic: "down" },
-            { word: "father", phonetic: "FAH-thuh" },
-            { word: "go", phonetic: "go" },
-            { word: "great", phonetic: "grayt" },
-            { word: "he", phonetic: "hee" },
-            { word: "her", phonetic: "huh" },
-            { word: "here", phonetic: "hee-uh" },
-            { word: "how", phonetic: "how" },
-            { word: "I", phonetic: "eye" },
-            { word: "love", phonetic: "luv" },
-            { word: "many", phonetic: "MEN-ee" },
-            { word: "me", phonetic: "mee" },
-            { word: "mother", phonetic: "MUTH-uh" },
-            { word: "my", phonetic: "my" },
-            { word: "no", phonetic: "no" },
-            { word: "now", phonetic: "now" },
-            { word: "of", phonetic: "uv" },
-            { word: "old", phonetic: "old" },
-            { word: "once", phonetic: "wuns" },
-            { word: "one", phonetic: "wun" },
-            { word: "other", phonetic: "UTH-uh" },
-            { word: "over", phonetic: "OH-vuh" },
-            { word: "said", phonetic: "sed" },
-            { word: "saw", phonetic: "saw" },
-            { word: "school", phonetic: "skool" },
-            { word: "she", phonetic: "shee" },
-            
-            { word: "should", phonetic: "shood" },
-            
-            { word: "small", phonetic: "smawl" },
-            { word: "So", phonetic: "so" },
-            { word: "some", phonetic: "sum" },
-            { word: "son", phonetic: "sun" },
-            { word: "talk", phonetic: "tawk" },
-            { word: "tall", phonetic: "tawl" },
-            { word: "thought", phonetic: "thawt" },
-            { word: "the", phonetic: "thuh" },
-            { word: "through", phonetic: "throo" },
-            { word: "there", phonetic: "thair" },
-            { word: "to", phonetic: "too" },
-            { word: "they", phonetic: "thay" },
-            { word: "two", phonetic: "too" },
-            { word: "walk", phonetic: "wawk" },
-            { word: "want", phonetic: "wont" },
-            { word: "was", phonetic: "wuz" },
-            { word: "watch", phonetic: "woch" },
-            { word: "water", phonetic: "WAW-tuh" },
-            { word: "what", phonetic: "wot" },
-            { word: "we", phonetic: "wee" },
-            { word: "where", phonetic: "wair" },
-            { word: "wear", phonetic: "wair" },
-            { word: "who", phonetic: "hoo" },
-            { word: "were", phonetic: "wuh" },
-            { word: "whole", phonetic: "hohl" },
-            { word: "why", phonetic: "wy" },
-            { word: "worse", phonetic: "wuhs" },
-            { word: "would", phonetic: "wood" },
-            { word: "you", phonetic: "yoo" },
-            { word: "your", phonetic: "yor" }
+        // --- 1. Data: Words ---
+        const initialWordList = [ // Renamed to initialWordList
+            { word: "above" }, { word: "all" }, { word: "any" }, { word: "anyone" }, { word: "are" },
+            { word: "be" }, { word: "bought" }, { word: "brother" }, { word: "buy" }, { word: "by" },
+            { word: "call" }, { word: "caught" }, { word: "come" }, { word: "could" }, { word: "do" },
+            { word: "does" }, { word: "down" }, { word: "father" }, { word: "go" }, { word: "great" },
+            { word: "he" }, { word: "her" }, { word: "here" }, { word: "how" }, { word: "I" },
+            { word: "love" }, { word: "many" }, { word: "me" }, { word: "mother" }, { word: "my" },
+            { word: "no" }, { word: "now" }, { word: "of" }, { word: "old" }, { word: "once" },
+            { word: "one" }, { word: "other" }, { word: "over" }, { word: "said" }, { word: "saw" },
+            { word: "school" }, { word: "she" }, { word: "should" }, { word: "small" }, { word: "So" },
+            { word: "some" }, { word: "son" }, { word: "talk" }, { word: "tall" }, { word: "thought" },
+            { word: "the" }, { word: "through" }, { word: "there" }, { word: "to" }, { word: "they" },
+            { word: "two" }, { word: "walk" }, { word: "want" }, { word: "was" }, { word: "watch" },
+            { word: "water" }, { word: "what" }, { word: "we" }, { word: "where" }, { word: "wear" },
+            { word: "who" }, { word: "were" }, { word: "whole" }, { word: "why" }, { word: "worse" },
+            { word: "would" }, { word: "you" }, { word: "your" }
         ];
 
+        // ** Image Filenames - UPDATE THESE IF YOUR FILES ARE NAMED DIFFERENTLY **
+        // Ensure these match the filenames you uploaded to GitHub!
+        const milestoneImages = {
+            10: 'milestone-10.png',
+            20: 'milestone-20.png',
+            30: 'milestone-30.png',
+            40: 'milestone-40.png',
+            50: 'milestone-50.png',
+            60: 'milestone-60.png',
+            70: 'milestone-70.png'
+        };
+
+        const winningStickers = [
+            { id: 'pony', src: 'pony-sticker.png', alt: 'Jumping Pony Sticker' },
+            { id: 'dog', src: 'dog-sticker.png', alt: 'Blooming Flower Sticker' },
+            { id: 'bunny', src: 'bunny-sticker.png', alt: 'Excited Bunny Sticker' }
+        ];
+        // ** END Image Filenames **
+
+
         // --- 2. App State & DOM Elements ---
+        const totalWordCount = initialWordList.length;
         const wordDisplay = document.getElementById('word-display');
         const backButton = document.getElementById('back-button');
         const nextButton = document.getElementById('next-button');
         const audioButton = document.getElementById('audio-button');
+        
+        // Progress Elements
+        const progressCounter = document.getElementById('progress-counter');
+        
+        // Milestone Overlay Elements
+        const milestoneOverlay = document.getElementById('milestone-overlay');
+        const milestoneImage = document.getElementById('milestone-image');
+        const milestoneStatus = document.getElementById('milestone-status');
+        const milestoneContinueBtn = document.getElementById('milestone-continue-btn');
 
-        let historyStack = []; 
-        let currentIndex = -1;
+        // All Done Overlay Elements
+        const allDoneOverlay = document.getElementById('all-done-overlay');
+        const winningStickerChoices = document.getElementById('winning-sticker-choices');
+        const finalChosenSticker = document.getElementById('final-chosen-sticker');
+        const allDoneContinueBtn = document.getElementById('all-done-continue-btn');
+
+        let historyStack = []; // Stores indices of words shown in order
+        let currentIndex = -1; // Current position in historyStack
         let currentWord = ''; 
+
+        // Progress Tracking
+        const seenWordsSet = new Set(); // Tracks unique word *indices* shown in the current round
+        const celebratedMilestones = new Set(); // Tracks celebrated unique counts (10, 20, 30...)
+
+        let unseenWords = []; // Words not yet shown in the current round
+        let initialWordIndexes = []; // Store original indexes for `seenWordsSet`
 
         // --- 3. Speech Synthesis ---
         const synth = window.speechSynthesis;
@@ -269,10 +392,7 @@
         }
 
         function speakWord() {
-            if (!currentWord || !synth) {
-                console.log('Speech synthesis not available or no word selected.');
-                return;
-            }
+            if (!currentWord || !synth) return;
             
             synth.cancel(); 
             const utterance = new SpeechSynthesisUtterance(currentWord);
@@ -292,31 +412,119 @@
         }
 
         // --- 4. Core App Logic ---
+        
+        function showMilestone(wordsDone) {
+            const wordsToGo = totalWordCount - wordsDone;
+            
+            // Get the correct image based on wordsDone
+            const imageName = milestoneImages[wordsDone];
+            if (imageName) {
+                milestoneImage.src = imageName;
+            } else {
+                milestoneImage.src = 'https://placehold.co/300x150/AED9E0/333?text=Celebration!'; 
+            }
+            
+            milestoneStatus.textContent = `${wordsDone} WORDS DONE. ${wordsToGo} TO GO!`;
+            milestoneOverlay.classList.add('show');
+        }
+
+        function showAllDoneScreen() {
+            allDoneOverlay.classList.add('show');
+            winningStickerChoices.innerHTML = ''; 
+            winningStickers.forEach(sticker => {
+                const choiceDiv = document.createElement('div');
+                choiceDiv.classList.add('sticker-choice');
+                choiceDiv.innerHTML = `<img src="${sticker.src}" alt="${sticker.alt}">`;
+                choiceDiv.addEventListener('click', () => selectWinningSticker(sticker, choiceDiv));
+                winningStickerChoices.appendChild(choiceDiv);
+            });
+            finalChosenSticker.innerHTML = '<p>Your chosen sticker will appear here!</p>';
+        }
+
+        function selectWinningSticker(sticker, chosenDiv) {
+            document.querySelectorAll('.sticker-choice').forEach(div => {
+                div.classList.remove('selected');
+            });
+            chosenDiv.classList.add('selected');
+
+            finalChosenSticker.innerHTML = `<img src="${sticker.src}" alt="${sticker.alt}"><p>You chose the ${sticker.alt.toLowerCase()}!</p>`;
+        }
+
+
+        function updateProgress(wordIndex) {
+            const wasNewWord = !seenWordsSet.has(wordIndex);
+            seenWordsSet.add(wordIndex);
+            const uniqueCount = seenWordsSet.size;
+            
+            progressCounter.textContent = `${uniqueCount} / ${totalWordCount}`;
+            
+            if (wasNewWord && uniqueCount > 0 && uniqueCount % 10 === 0 && uniqueCount <= 70 && !celebratedMilestones.has(uniqueCount)) {
+                celebratedMilestones.add(uniqueCount); 
+                showMilestone(uniqueCount);
+            }
+
+            if (uniqueCount === totalWordCount) {
+                if (milestoneOverlay.classList.contains('show')) {
+                    milestoneOverlay.addEventListener('transitionend', () => {
+                        setTimeout(() => {
+                            showAllDoneScreen();
+                        }, 100); 
+                    }, { once: true }); 
+                } else {
+                    showAllDoneScreen();
+                }
+            }
+        }
+
         function displayWord(index) {
-            const wordData = wordList[index];
+            const wordData = initialWordList[index]; // Use initialWordList to get the word object
             currentWord = wordData.word; 
             wordDisplay.textContent = wordData.word;
             
-            // Adjust font size for longer words
             if (wordData.word.length > 6) {
                 wordDisplay.style.fontSize = "4.5rem";
             } else {
                 wordDisplay.style.fontSize = "6rem";
             }
+            
+            updateProgress(index);
         }
 
         function updateNavButtons() {
             backButton.disabled = (currentIndex <= 0);
+            // nextButton.disabled = (unseenWords.length === 0 && currentIndex === historyStack.length - 1);
+            // The above line prevents "Next" once all words are seen. Let's allow cycling.
         }
 
         function showNextWord() {
+            // If user went back and now presses next, display the next word in history
             if (currentIndex < historyStack.length - 1) {
-                historyStack = historyStack.slice(0, currentIndex + 1);
+                currentIndex++;
+                displayWord(historyStack[currentIndex]);
+                updateNavButtons();
+                return;
             }
-            const newIndex = Math.floor(Math.random() * wordList.length);
-            historyStack.push(newIndex);
+
+            // If all words have been seen, reset the unseenWords pool for a new round
+            if (unseenWords.length === 0) {
+                unseenWords = [...initialWordIndexes]; // Refill with all word indexes
+                seenWordsSet.clear(); // Clear seen words for new round's progress
+                celebratedMilestones.clear(); // Clear celebrated milestones for new round
+                progressCounter.textContent = `0 / ${totalWordCount}`; // Reset progress display
+            }
+
+            // Pick a random word from the unseenWords pool
+            const randomIndexInUnseen = Math.floor(Math.random() * unseenWords.length);
+            const selectedWordIndex = unseenWords[randomIndexInUnseen];
+            
+            // Remove the selected word from the unseenWords pool
+            unseenWords.splice(randomIndexInUnseen, 1);
+
+            // Update history
+            historyStack.push(selectedWordIndex);
             currentIndex++;
-            displayWord(newIndex);
+            
+            displayWord(selectedWordIndex);
             updateNavButtons();
         }
 
@@ -333,10 +541,37 @@
         backButton.addEventListener('click', showPreviousWord);
         audioButton.addEventListener('click', speakWord);
         wordDisplay.addEventListener('click', speakWord); 
+        
+        milestoneContinueBtn.addEventListener('click', () => {
+            milestoneOverlay.classList.remove('show');
+            // If all words are done AND the milestone was the last thing, show all done
+            if (seenWordsSet.size === totalWordCount && !allDoneOverlay.classList.contains('show')) {
+                 showAllDoneScreen();
+            }
+        });
+
+        allDoneContinueBtn.addEventListener('click', () => {
+            allDoneOverlay.classList.remove('show');
+            // Optionally, you might want to reset the game here or offer to start over
+            // For now, it just closes the modal.
+            // To start a new round after "Finish", uncomment init()
+            // init(); 
+        });
 
         // --- 6. Initial Load ---
         function init() {
-            showNextWord(); 
+            // Populate initialWordIndexes (0 to totalWordCount-1)
+            initialWordIndexes = Array.from({ length: totalWordCount }, (_, i) => i);
+            unseenWords = [...initialWordIndexes]; // Start with all words unseen
+            
+            // Clear all state for a fresh start
+            seenWordsSet.clear();
+            celebratedMilestones.clear();
+            historyStack = [];
+            currentIndex = -1;
+
+            progressCounter.textContent = `0 / ${totalWordCount}`;
+            showNextWord(); // Load the first random word (will be unique)
         }
 
         init();
