@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1LZW1Y6L2J"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-1LZW1Y6L2J');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Practice Your Red Words</title>
@@ -18,8 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1LZW1Y6L2J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1LZW1Y6L2J'); // Your specific Measurement ID
+    </script>
     <style>
-        /* Basic Setup */
+        /* Your existing CSS styles go here */
+        /* ... */
         :root {
             --bg-color: #FEF7F7; /* Pastel Pink */
             --card-color: rgba(255, 255, 255, 0.97); 
@@ -46,7 +46,6 @@
             text-align: center;
         }
 
-        /* Main App Container */
         #app-container {
             width: 90%;
             max-width: 400px;
@@ -63,7 +62,6 @@
             justify-content: space-between;
         }
 
-        /* Header */
         header {
             line-height: 1.2;
         }
@@ -74,7 +72,6 @@
             margin: 0;
         }
 
-        /* Progress Counter Style */
         #progress-counter {
             font-size: 1.25rem;
             font-weight: 400;
@@ -82,7 +79,6 @@
             margin: 0 0 10px 0;
         }
 
-        /* Word Display Area */
         #word-card {
             flex-grow: 1;
             display: flex;
@@ -102,7 +98,6 @@
             margin: 0;
         }
 
-        /* Audio Button Style */
         #audio-button {
             font-family: 'Patrick Hand', cursive; 
             font-size: 1.5rem; 
@@ -118,7 +113,6 @@
         }
         #audio-button:active { transform: scale(0.97); }
 
-        /* Navigation Buttons */
         nav {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -146,7 +140,6 @@
             transform: none;
         }
 
-        /* Milestone & All Done Overlay - Shared Styles */
         .overlay {
             position: fixed;
             top: 0;
@@ -174,7 +167,7 @@
             border-radius: 20px;
             text-align: center;
             width: 80%;
-            max-width: 350px; /* Slightly wider for all done */
+            max-width: 350px;
             box-shadow: var(--shadow);
             transform: scale(0.9);
             transition: transform 0.3s ease;
@@ -191,11 +184,11 @@
         .overlay-image {
             width: 100%;
             max-width: 250px;
-            height: auto; /* Allow height to adjust naturally */
-            object-fit: contain; /* Ensure image fits without cropping */
+            height: auto;
+            object-fit: contain;
             border-radius: 10px;
-            margin: 10px auto; /* Center image */
-            background-color: #eee; /* Placeholder bg */
+            margin: 10px auto;
+            background-color: #eee;
         }
         .overlay-status {
             font-size: 1.25rem;
@@ -216,7 +209,6 @@
         }
         .overlay-button:active { transform: scale(0.97); }
 
-        /* Winning Sticker Choice Styles */
         #winning-sticker-choices {
             display: flex;
             justify-content: space-around;
@@ -230,7 +222,7 @@
             padding: 10px;
             cursor: pointer;
             transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-            flex: 1; /* Distribute space evenly */
+            flex: 1;
         }
         .sticker-choice:hover {
             transform: translateY(-5px);
@@ -239,19 +231,19 @@
         }
         .sticker-choice.selected {
             border-color: var(--button-primary);
-            box-shadow: 0 0 0 3px var(--button-primary); /* Highlight selected */
+            box-shadow: 0 0 0 3px var(--button-primary);
         }
         .sticker-choice img {
-            width: 80px; /* Smaller image size for choice */
+            width: 80px;
             height: 80px;
             object-fit: contain;
             border-radius: 8px;
         }
         #final-chosen-sticker {
             margin-top: 20px;
-            border: 2px dashed #ccc; /* Border for chosen sticker area */
+            border: 2px dashed #ccc;
             padding: 10px;
-            min-height: 100px; /* Ensure space even if no sticker chosen yet */
+            min-height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -315,7 +307,7 @@
 
     <script>
         // --- 1. Data: Words ---
-        const initialWordList = [ // Renamed to initialWordList
+        const initialWordList = [
             { word: "above" }, { word: "all" }, { word: "any" }, { word: "anyone" }, { word: "are" },
             { word: "be" }, { word: "bought" }, { word: "brother" }, { word: "buy" }, { word: "by" },
             { word: "call" }, { word: "caught" }, { word: "come" }, { word: "could" }, { word: "do" },
@@ -334,7 +326,6 @@
         ];
 
         // ** Image Filenames - UPDATE THESE IF YOUR FILES ARE NAMED DIFFERENTLY **
-        // Ensure these match the filenames you uploaded to GitHub!
         const milestoneImages = {
             10: 'milestone-10.png',
             20: 'milestone-20.png',
@@ -347,7 +338,7 @@
 
         const winningStickers = [
             { id: 'pony', src: 'pony-sticker.png', alt: 'Jumping Pony Sticker' },
-            { id: 'dog', src: 'dog-sticker.png', alt: 'Blooming Flower Sticker' },
+            { id: 'dog', src: 'dog-sticker.png', alt: 'Firefighter Dog Sticker' },
             { id: 'bunny', src: 'bunny-sticker.png', alt: 'Excited Bunny Sticker' }
         ];
         // ** END Image Filenames **
@@ -360,31 +351,27 @@
         const nextButton = document.getElementById('next-button');
         const audioButton = document.getElementById('audio-button');
         
-        // Progress Elements
         const progressCounter = document.getElementById('progress-counter');
         
-        // Milestone Overlay Elements
         const milestoneOverlay = document.getElementById('milestone-overlay');
         const milestoneImage = document.getElementById('milestone-image');
         const milestoneStatus = document.getElementById('milestone-status');
         const milestoneContinueBtn = document.getElementById('milestone-continue-btn');
 
-        // All Done Overlay Elements
         const allDoneOverlay = document.getElementById('all-done-overlay');
         const winningStickerChoices = document.getElementById('winning-sticker-choices');
         const finalChosenSticker = document.getElementById('final-chosen-sticker');
         const allDoneContinueBtn = document.getElementById('all-done-continue-btn');
 
-        let historyStack = []; // Stores indices of words shown in order
-        let currentIndex = -1; // Current position in historyStack
+        let historyStack = []; 
+        let currentIndex = -1; 
         let currentWord = ''; 
 
-        // Progress Tracking
-        const seenWordsSet = new Set(); // Tracks unique word *indices* shown in the current round
-        const celebratedMilestones = new Set(); // Tracks celebrated unique counts (10, 20, 30...)
+        const seenWordsSet = new Set(); 
+        const celebratedMilestones = new Set(); 
 
-        let unseenWords = []; // Words not yet shown in the current round
-        let initialWordIndexes = []; // Store original indexes for `seenWordsSet`
+        let unseenWords = []; 
+        let initialWordIndexes = []; 
 
         // --- 3. Speech Synthesis ---
         const synth = window.speechSynthesis;
@@ -418,6 +405,15 @@
             utterance.rate = 0.85; 
             
             synth.speak(utterance);
+
+            // ** NEW GA4 Custom Event: Listen Click **
+            if (typeof gtag === 'function') {
+                gtag('event', 'listen_click', {
+                    'event_category': 'Engagement',
+                    'event_label': `Listened to: ${currentWord}`,
+                    'word': currentWord
+                });
+            }
         }
 
         // --- 4. Core App Logic ---
@@ -425,7 +421,6 @@
         function showMilestone(wordsDone) {
             const wordsToGo = totalWordCount - wordsDone;
             
-            // Get the correct image based on wordsDone
             const imageName = milestoneImages[wordsDone];
             if (imageName) {
                 milestoneImage.src = imageName;
@@ -448,6 +443,15 @@
                 winningStickerChoices.appendChild(choiceDiv);
             });
             finalChosenSticker.innerHTML = '<p>Your chosen sticker will appear here!</p>';
+
+            // ** NEW GA4 Custom Event: All Words Completed **
+            if (typeof gtag === 'function') {
+                gtag('event', 'all_words_completed', {
+                    'event_category': 'Progress',
+                    'event_label': 'User completed all red words',
+                    'total_words': totalWordCount
+                });
+            }
         }
 
         function selectWinningSticker(sticker, chosenDiv) {
@@ -457,6 +461,16 @@
             chosenDiv.classList.add('selected');
 
             finalChosenSticker.innerHTML = `<img src="${sticker.src}" alt="${sticker.alt}"><p>You chose the ${sticker.alt.toLowerCase()}!</p>`;
+
+            // ** NEW GA4 Custom Event: Sticker Selected **
+            if (typeof gtag === 'function') {
+                gtag('event', 'winning_sticker_selected', {
+                    'event_category': 'Engagement',
+                    'event_label': `User chose: ${sticker.alt}`,
+                    'sticker_id': sticker.id,
+                    'sticker_name': sticker.alt
+                });
+            }
         }
 
 
@@ -486,7 +500,7 @@
         }
 
         function displayWord(index) {
-            const wordData = initialWordList[index]; // Use initialWordList to get the word object
+            const wordData = initialWordList[index];
             currentWord = wordData.word; 
             wordDisplay.textContent = wordData.word;
             
@@ -501,12 +515,9 @@
 
         function updateNavButtons() {
             backButton.disabled = (currentIndex <= 0);
-            // nextButton.disabled = (unseenWords.length === 0 && currentIndex === historyStack.length - 1);
-            // The above line prevents "Next" once all words are seen. Let's allow cycling.
         }
 
         function showNextWord() {
-            // If user went back and now presses next, display the next word in history
             if (currentIndex < historyStack.length - 1) {
                 currentIndex++;
                 displayWord(historyStack[currentIndex]);
@@ -514,22 +525,21 @@
                 return;
             }
 
-            // If all words have been seen, reset the unseenWords pool for a new round
             if (unseenWords.length === 0) {
-                unseenWords = [...initialWordIndexes]; // Refill with all word indexes
-                seenWordsSet.clear(); // Clear seen words for new round's progress
-                celebratedMilestones.clear(); // Clear celebrated milestones for new round
-                progressCounter.textContent = `0 / ${totalWordCount}`; // Reset progress display
+                unseenWords = [...initialWordIndexes]; 
+                seenWordsSet.clear(); 
+                celebratedMilestones.clear(); 
+                progressCounter.textContent = `0 / ${totalWordCount}`; 
+                // Optionally, if you want to also clear history when all words are seen and starting over:
+                // historyStack = [];
+                // currentIndex = -1;
             }
 
-            // Pick a random word from the unseenWords pool
             const randomIndexInUnseen = Math.floor(Math.random() * unseenWords.length);
             const selectedWordIndex = unseenWords[randomIndexInUnseen];
             
-            // Remove the selected word from the unseenWords pool
             unseenWords.splice(randomIndexInUnseen, 1);
 
-            // Update history
             historyStack.push(selectedWordIndex);
             currentIndex++;
             
@@ -553,7 +563,6 @@
         
         milestoneContinueBtn.addEventListener('click', () => {
             milestoneOverlay.classList.remove('show');
-            // If all words are done AND the milestone was the last thing, show all done
             if (seenWordsSet.size === totalWordCount && !allDoneOverlay.classList.contains('show')) {
                  showAllDoneScreen();
             }
@@ -561,30 +570,23 @@
 
         allDoneContinueBtn.addEventListener('click', () => {
             allDoneOverlay.classList.remove('show');
-            // Optionally, you might want to reset the game here or offer to start over
-            // For now, it just closes the modal.
-            // To start a new round after "Finish", uncomment init()
-            // init(); 
         });
 
         // --- 6. Initial Load ---
         function init() {
-            // Populate initialWordIndexes (0 to totalWordCount-1)
             initialWordIndexes = Array.from({ length: totalWordCount }, (_, i) => i);
-            unseenWords = [...initialWordIndexes]; // Start with all words unseen
+            unseenWords = [...initialWordIndexes]; 
             
-            // Clear all state for a fresh start
             seenWordsSet.clear();
             celebratedMilestones.clear();
             historyStack = [];
             currentIndex = -1;
 
             progressCounter.textContent = `0 / ${totalWordCount}`;
-            showNextWord(); // Load the first random word (will be unique)
+            showNextWord(); 
         }
 
         init();
     </script>
 </body>
-
 </html>
